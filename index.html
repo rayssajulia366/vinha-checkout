@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checkout — Finalizar Encomenda</title>
+  <meta name="description" content="Finalize a sua compra de forma segura com MB WAY ou Multibanco." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;1,400&family=Playfair+Display:wght@400;600&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="#" class="header-back" id="btn-continuar" aria-label="Continuar a comprar">
+        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
+        <span class="back-label">continuar a comprar</span>
+      </a>
+      <div class="header-logo">
+        <span class="logo-text">checkout</span>
+      </div>
+      <a href="#" class="header-help">AJUDA?</a>
+    </div>
+  </header>
+
+  <!-- ===== TRUSTPILOT BAR ===== -->
+  <div class="trust-bar" aria-label="Avaliações dos clientes">
+    <span class="trust-label">Os nossos clientes dizem</span>
+    <span class="trust-rating-word">Excelente</span>
+    <div class="trust-stars" aria-label="4.8 de 5 estrelas">
+      <span class="star filled" aria-hidden="true">★</span>
+      <span class="star filled" aria-hidden="true">★</span>
+      <span class="star filled" aria-hidden="true">★</span>
+      <span class="star filled" aria-hidden="true">★</span>
+      <span class="star half" aria-hidden="true">★</span>
+    </div>
+    <span class="trust-score">4.8 em 5 baseado em <a href="#" class="trust-link">1290 opiniões</a></span>
+    <svg class="trustpilot-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 24" width="80" height="16"
+      aria-label="Trustpilot">
+      <text y="18" font-size="13" font-family="Arial" font-weight="bold" fill="#00b67a">★ Trustpilot</text>
+    </svg>
+  </div>
+
+
+
+  <!-- ===== MAIN CHECKOUT ===== -->
+  <main class="checkout-main" id="main-checkout">
+    <div class="checkout-grid">
+
+      <!-- ===== COLUNA 1: CARRINHO ===== -->
+      <section class="checkout-col col-cart col-open" aria-labelledby="col-title-1">
+        <div class="col-header">
+          <span class="col-number" aria-hidden="true">1</span>
+          <div class="col-title-group">
+            <h2 class="col-title" id="col-title-1">O SEU CARRINHO</h2>
+            <p class="col-subtitle">Confira o seu carrinho</p>
+          </div>
+          <span class="col-accordion-arrow" aria-hidden="true">▾</span>
+        </div>
+
+        <div class="col-inner">
+          <div class="cart-items" id="cart-items" role="list" aria-label="Artigos no carrinho">
+            <!-- Renderizado pelo JS -->
+          </div>
+
+          <button class="btn-update-cart" id="btn-update-cart" type="button">ACTUALIZAR CARRINHO</button>
+
+          <div class="cart-subtotal">
+            <span>SUBTOTAL</span>
+            <span id="subtotal-value" aria-live="polite">0,00&nbsp;€</span>
+          </div>
+
+          <div class="coupon-row">
+            <span class="coupon-label">TEM UM CUPÃO?</span>
+            <div class="coupon-input-group">
+              <label for="coupon-input" class="visually-hidden">Código de cupão</label>
+              <input type="text" id="coupon-input" class="coupon-input" placeholder="Código do cupão" maxlength="20"
+                autocomplete="off" spellcheck="false" />
+              <button class="coupon-btn" id="btn-apply-coupon" type="button" aria-label="Aplicar cupão">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                  aria-hidden="true">
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="col-total">
+            <span id="cart-total-display" aria-live="polite">0,00&nbsp;€</span>
+          </div>
+          <p class="col-total-label">Valor de compras</p>
+        </div>
+      </section>
+
+      <!-- ===== COLUNA 2: DADOS ===== -->
+      <section class="checkout-col col-data" aria-labelledby="col-title-2">
+        <div class="col-header">
+          <span class="col-number" aria-hidden="true">2</span>
+          <div class="col-title-group">
+            <h2 class="col-title" id="col-title-2">OS SEUS DADOS</h2>
+            <p class="col-subtitle">Confirme ou preencha os seus dados</p>
+          </div>
+          <span class="col-accordion-arrow" aria-hidden="true">▾</span>
+        </div>
+
+        <div class="col-inner">
+          <div class="form-scroll">
+            <form id="customer-form" novalidate autocomplete="on">
+
+              <div class="form-group">
+                <label class="form-label" for="nome">NOME <span class="required"
+                    aria-label="obrigatório">*</span></label>
+                <input type="text" id="nome" name="name" class="form-input" placeholder="Nome completo" maxlength="80"
+                  autocomplete="name" inputmode="text" required />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="email">E-MAIL <span class="required"
+                    aria-label="obrigatório">*</span></label>
+                <input type="email" id="email" name="email" class="form-input" placeholder="email@exemplo.com"
+                  maxlength="100" autocomplete="email" inputmode="email" required />
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="telemovel">TELEMÓVEL <span class="required"
+                      aria-label="obrigatório">*</span></label>
+                  <input type="tel" id="telemovel" name="tel" class="form-input" placeholder="9XX XXX XXX"
+                    maxlength="11" autocomplete="tel-national" inputmode="tel" required />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="nif">NIF</label>
+                  <input type="text" id="nif" name="nif" class="form-input" placeholder="123456789" maxlength="9"
+                    inputmode="numeric" autocomplete="off" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="pais">PAÍS / REGIÃO <span class="required"
+                    aria-label="obrigatório">*</span></label>
+                <div class="select-wrapper">
+                  <select id="pais" name="country" class="form-select" required autocomplete="country">
+                    <option value="PT" selected>Portugal</option>
+                    <option value="BR">Brasil</option>
+                    <option value="ES">Espanha</option>
+                    <option value="FR">França</option>
+                    <option value="DE">Alemanha</option>
+                    <option value="GB">Reino Unido</option>
+                    <option value="IT">Itália</option>
+                    <option value="NL">Países Baixos</option>
+                    <option value="BE">Bélgica</option>
+                    <option value="CH">Suíça</option>
+                    <option value="LU">Luxemburgo</option>
+                  </select>
+                  <svg class="select-arrow" xmlns="http://www.w3.org/2000/svg" width="12" height="12"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="morada">MORADA <span class="required"
+                    aria-label="obrigatório">*</span></label>
+                <input type="text" id="morada" name="address-line1" class="form-input" placeholder="Rua, número, andar"
+                  maxlength="100" autocomplete="address-line1" required />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="morada2">MORADA 2 <span
+                    style="font-weight:400;color:#aaa;font-size:9.5px;">(OPCIONAL)</span></label>
+                <input type="text" id="morada2" name="address-line2" class="form-input"
+                  placeholder="Apartamento, bloco, etc." maxlength="60" autocomplete="address-line2" />
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="codigo-postal">CÓDIGO POSTAL <span class="required"
+                      aria-label="obrigatório">*</span></label>
+                  <input type="text" id="codigo-postal" name="postal-code" class="form-input" placeholder="0000-000"
+                    maxlength="8" inputmode="numeric" autocomplete="postal-code" required />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="localidade">LOCALIDADE <span class="required"
+                      aria-label="obrigatório">*</span></label>
+                  <input type="text" id="localidade" name="city" class="form-input" placeholder="Lisboa" maxlength="60"
+                    autocomplete="address-level2" required />
+                </div>
+              </div>
+
+              <button type="button" class="btn-add-address" id="btn-add-address"
+                aria-label="Adicionar morada alternativa" title="Adicionar morada de entrega alternativa">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  aria-hidden="true">
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+              </button>
+
+            </form>
+          </div>
+
+          <div class="col-total">&nbsp;</div>
+          <p class="col-total-label">&nbsp;</p>
+        </div>
+      </section>
+
+      <!-- ===== COLUNA 3: ENTREGA ===== -->
+      <section class="checkout-col col-delivery" aria-labelledby="col-title-3">
+        <div class="col-header">
+          <span class="col-number" aria-hidden="true">3</span>
+          <div class="col-title-group">
+            <h2 class="col-title" id="col-title-3">ENTREGA</h2>
+            <p class="col-subtitle">Escolha o tipo de entrega</p>
+          </div>
+          <span class="col-accordion-arrow" aria-hidden="true">▾</span>
+        </div>
+
+        <div class="col-inner">
+          <fieldset class="delivery-options" aria-label="Tipo de entrega">
+            <legend class="visually-hidden">Tipo de entrega</legend>
+
+            <label class="radio-option" for="delivery-normal">
+              <input type="radio" id="delivery-normal" name="delivery" value="normal" checked />
+              <div class="radio-content">
+                <div class="radio-top">
+                  <span class="radio-label">entrega normal: 3 a 5 dias úteis</span>
+                  <span class="delivery-price free">Grátis</span>
+                </div>
+                <p class="radio-desc">Grátis para encomendas acima de 70&nbsp;€</p>
+                <p class="radio-desc-en">Free for orders above 70&nbsp;€.</p>
+              </div>
+            </label>
+
+            <label class="radio-option" for="delivery-express">
+              <input type="radio" id="delivery-express" name="delivery" value="express" />
+              <div class="radio-content">
+                <div class="radio-top">
+                  <span class="radio-label">entrega expresso: 24 a 48 horas</span>
+                  <span class="delivery-price express-price">8,99&nbsp;€</span>
+                </div>
+              </div>
+            </label>
+          </fieldset>
+
+          <div class="col-total">
+            <span id="shipping-total-display" aria-live="polite">0,00&nbsp;€</span>
+          </div>
+          <p class="col-total-label">Taxa de entrega</p>
+        </div>
+      </section>
+
+      <!-- ===== COLUNA 4: PAGAMENTO ===== -->
+      <section class="checkout-col col-payment" aria-labelledby="col-title-4">
+        <div class="col-header">
+          <span class="col-number" aria-hidden="true">4</span>
+          <div class="col-title-group">
+            <h2 class="col-title" id="col-title-4">PAGAMENTO</h2>
+            <p class="col-subtitle">Escolha o meio de pagamento</p>
+          </div>
+          <span class="col-accordion-arrow" aria-hidden="true">▾</span>
+        </div>
+
+        <div class="col-inner">
+          <fieldset class="payment-options" aria-label="Meio de pagamento">
+            <legend class="visually-hidden">Meio de pagamento</legend>
+
+            <!-- MB WAY -->
+            <label class="radio-option payment-option" for="pay-mbway">
+              <input type="radio" id="pay-mbway" name="payment" value="mbway" />
+              <div class="radio-content payment-content">
+                <span class="payment-label">mb way</span>
+                <img src="assets/mbway-logo.svg" alt="MB Way" class="payment-logo"
+                  onerror="this.style.display='none'; this.nextElementSibling.style.display='inline'" />
+                <span class="payment-logo-fallback"
+                  style="display:none; font-weight:bold; color:#e31837; font-size:11px;">MB WAY</span>
+              </div>
+            </label>
+
+            <!-- Número telemóvel MB WAY -->
+            <div class="mbway-phone-group" id="mbway-phone-group" aria-live="polite">
+              <div class="form-group">
+                <label class="form-label" for="mbway-phone">NÚMERO MB WAY <span class="required">*</span></label>
+                <input type="tel" id="mbway-phone" class="form-input" placeholder="9XX XXX XXX" maxlength="11"
+                  inputmode="tel" autocomplete="tel-national" />
+                <p class="mbway-hint">Introduza o número associado à sua conta MB WAY</p>
+              </div>
+            </div>
+
+            <!-- MULTIBANCO -->
+            <label class="radio-option payment-option" for="pay-multibanco">
+              <input type="radio" id="pay-multibanco" name="payment" value="multibanco" checked />
+              <div class="radio-content payment-content">
+                <span class="payment-label">referência multibanco</span>
+                <img src="assets/mb-logo.svg" alt="Multibanco" class="payment-logo"
+                  onerror="this.style.display='none'; this.nextElementSibling.style.display='inline'" />
+                <span class="payment-logo-fallback"
+                  style="display:none; font-weight:bold; color:#004B97; font-size:11px;">MB</span>
+              </div>
+            </label>
+            <div class="multibanco-info" id="multibanco-info" aria-live="polite">
+              <p class="multibanco-desc">Pague com toda a conveniência numa caixa Multibanco ou no seu banco online.</p>
+            </div>
+
+          </fieldset>
+
+          <div class="terms-row">
+            <label class="terms-label" for="terms-check">
+              <input type="checkbox" id="terms-check" name="terms" />
+              <span>Li e aceito os <a href="#" class="terms-link">termos e condições</a> da loja.</span>
+            </label>
+          </div>
+
+          <div class="col-total">
+            <span id="order-total-display" aria-live="polite">0,00&nbsp;€</span>
+          </div>
+          <p class="col-total-label">Valor da encomenda</p>
+        </div>
+      </section>
+
+    </div><!-- /.checkout-grid -->
+
+    <!-- ===== BOTÃO FINALIZAR ===== -->
+    <div class="finalizar-row" id="finalizar-row">
+      <button class="btn-finalizar" id="btn-finalizar" type="button">finalizar encomenda</button>
+    </div>
+
+    <!-- ===== RESULTADO DO PAGAMENTO (inline) ===== -->
+    <section class="payment-result" id="payment-result" style="display:none;" aria-live="polite">
+
+      <!-- Cabeçalho -->
+      <div class="pr-header">
+        <div class="pr-icon" id="pr-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+        </div>
+        <div>
+          <h2 class="pr-title" id="pr-title">Encomenda Recebida!</h2>
+          <p class="pr-subtitle" id="pr-subtitle"></p>
+        </div>
+      </div>
+
+      <!-- Dados de pagamento com botões de copiar -->
+      <div class="pr-data-grid" id="pr-data-grid"><!-- preenchido pelo JS --></div>
+
+      <!-- Nota inferior -->
+      <p class="pr-note" id="pr-note"></p>
+
+      <!-- Ações -->
+      <div class="pr-actions">
+        <button class="btn-pr-back" id="btn-pr-back" type="button">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+          Nova Encomenda
+        </button>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ===== RODAPÉ ===== -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-col">
+        <h3 class="footer-heading">APOIO AO CLIENTE</h3>
+        <ul class="footer-list">
+          <li>
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            <a href="#">Perguntas frequentes</a>
+          </li>
+          <li>
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+            <a href="#">Chat Online</a>
+          </li>
+          <li>
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+              <polyline points="22,6 12,13 2,6" />
+            </svg>
+            <a href="mailto:ajuda@vinha.pt">ajuda@vinha.pt</a>
+          </li>
+          <li>
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path
+                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.39 2 2 0 0 1 3.58 1.18h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6.13 6.13l1.12-1.12a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+            </svg>
+            <span>323 093 789 <small>(chamada para rede móvel nacional)</small></span>
+          </li>
+          <li>
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+            </svg>
+            <a href="#">Livro de Reclamações Eletrónico</a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h3 class="footer-heading">COMPRAS SEGURAS</h3>
+        <ul class="footer-list">
+          <li>
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+            <a href="#">Política de privacidade &amp; Termos e condições</a>
+          </li>
+          <li>
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+            <a href="#">Venda responsável</a>
+          </li>
+        </ul>
+
+        <div class="footer-badges">
+          <div class="ssl-badge">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+              stroke="#2e7d32" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+            <span class="ssl-text">POSITIVE<br />SSL</span>
+          </div>
+          <div class="confianca-badge">
+            <div class="confianca-inner">
+              <span class="confianca-star" aria-hidden="true">★</span>
+              <span class="confianca-text">Confiança<br />ONLINE</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-col footer-col-cards">
+        <div class="card-badges">
+          <div class="card-badge">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 30" width="48" height="30"
+              aria-label="American Express">
+              <rect width="48" height="30" rx="4" fill="#2E6BC6" /><text y="20" x="4" font-size="7" fill="white"
+                font-family="Arial" font-weight="bold">American</text><text y="27" x="4" font-size="7" fill="white"
+                font-family="Arial" font-weight="bold">Express</text>
+            </svg>
+            <span>American Express</span>
+          </div>
+          <div class="card-badge">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 30" width="48" height="30"
+              aria-label="Verified by Visa">
+              <rect width="48" height="30" rx="4" fill="#1A1F71" /><text y="20" x="4" font-size="7" fill="white"
+                font-family="Arial" font-weight="bold">Verified by</text><text y="27" x="4" font-size="7" fill="white"
+                font-family="Arial" font-weight="bold">Visa</text>
+            </svg>
+            <span>Verified by Visa</span>
+          </div>
+          <div class="card-badge">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 30" width="48" height="30"
+              aria-label="MasterCard Secure Code">
+              <rect width="48" height="30" rx="4" fill="#EB001B" />
+              <circle cx="19" cy="15" r="10" fill="#EB001B" />
+              <circle cx="29" cy="15" r="10" fill="#F79E1B" />
+              <path d="M24 8a10 10 0 0 1 0 14 10 10 0 0 1 0-14z" fill="#FF5F00" />
+            </svg>
+            <span>MasterCard Secure Code</span>
+          </div>
+          <div class="card-badge">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 30" width="48" height="30"
+              aria-label="Netcaixa Online">
+              <rect width="48" height="30" rx="4" fill="#004B97" /><text y="20" x="6" font-size="9" fill="white"
+                font-family="Arial" font-weight="bold">MB</text>
+            </svg>
+            <span>netcaixa online</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>© 2015-2026</span>
+      <div class="footer-logo-bottom">
+        <span class="footer-brand">VINHA</span>
+        <span class="footer-brand-sub">all about wine</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===== CLASSE UTILITÁRIA (acessibilidade) ===== -->
+  <style>
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    fieldset.delivery-options,
+    fieldset.payment-options {
+      border: none;
+      padding: 0;
+      margin: 0;
+    }
+  </style>
+
+  <!-- ===== OVERLAY DE CARREGAMENTO ===== -->
+  <div class="loading-overlay" id="loading-overlay" style="display:none;" aria-live="assertive" role="status">
+    <div class="loading-spinner"></div>
+    <p class="loading-text">A processar...</p>
+  </div>
+
+
+  <script src="checkout.js"></script>
+</body>
+
+</html>

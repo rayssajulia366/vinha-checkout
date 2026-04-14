@@ -1,0 +1,13 @@
+{
+  "name": "checkout-mbway",
+  "version": "1.0.0",
+  "description": "Checkout com MB WAY e Multibanco via WayMB API",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1"
+  }
+}
