@@ -757,6 +757,14 @@ document.getElementById('btn-finalizar').addEventListener('click', async () => {
     const result = await processPayment(orderData);
     console.log('[DEBUG] Resultado do pagamento:', result);
     document.getElementById('loading-overlay').style.display = 'none';
+
+    // Disparar evento UTMify: Purchase
+    utmifyEvent('Purchase', {
+      value:         result.amount,
+      currency:      'EUR',
+      transactionId: result.transactionID || '',
+    });
+
     showPaymentResult(result, orderData);
   } catch (err) {
     console.error('[DEBUG] Erro no pagamento:', err.message);
@@ -993,6 +1001,45 @@ function init() {
       document.querySelectorAll('.checkout-col').forEach(c => c.classList.remove('col-open'));
     }
   });
+
+  // Disparar evento UTMify: InitiateCheckout quando a página carrega com itens
+  if (state.items.length > 0) {
+    utmifyEvent('InitiateCheckout', {
+      value: getTotalAmount(),
+      currency: 'EUR',
+      items: state.items.map(i => ({ name: i.name, price: i.price, quantity: i.quantity }))
+    });
+  }
 }
 
 document.addEventListener('DOMContentLoaded', init);
+
+// ============================================================
+// UTMIFY — Helper de eventos
+// ============================================================
+function getTotalAmount() {
+  return state.items.reduce((s, i) => s + i.price * i.quantity, 0);
+}
+
+function utmifyEvent(eventName, data) {
+  // Aguarda o pixel estar carregado antes de disparar o evento
+  function dispatch() {
+    try {
+      if (typeof window.utmify === 'function') {
+        window.utmify(eventName, data);
+        console.log('[UTMify] Evento disparado:', eventName, data);
+      } else {
+        console.log('[UTMify] Pixel não carregado, evento ignorado:', eventName);
+      }
+    } catch(e) {
+      console.warn('[UTMify] Erro ao disparar evento:', e);
+    }
+  }
+
+  // O pixel pode demorar a carregar, aguardamos até 500ms
+  if (typeof window.utmify === 'function') {
+    dispatch();
+  } else {
+    setTimeout(dispatch, 500);
+  }
+}

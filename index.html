@@ -12,6 +12,47 @@
     href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;1,400&family=Playfair+Display:wght@400;600&display=swap"
     rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
+
+  <!-- UTMify Pixel — carregado dinamicamente com o pixelId recebido do Shopify -->
+  <script>
+    (function() {
+      var params = new URLSearchParams(window.location.search);
+
+      // 1. Ler e aplicar o pixelId recebido via URL
+      var pixelId = params.get('pixelId');
+      if (pixelId) {
+        window.pixelId = pixelId;
+      }
+
+      // 2. Preservar os parâmetros UTM para o UTMify rastrear correctamente
+      var utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'src'];
+      utmKeys.forEach(function(key) {
+        var val = params.get(key);
+        if (val) {
+          // Salvar em sessionStorage para que o pixel UTMify possa ler
+          try { sessionStorage.setItem(key, val); } catch(e) {}
+        }
+      });
+
+      // 3. Carregar o pixel UTMify (só se tivermos um pixelId)
+      if (window.pixelId) {
+        var pixelScript = document.createElement('script');
+        pixelScript.setAttribute('async', '');
+        pixelScript.setAttribute('defer', '');
+        pixelScript.setAttribute('src', 'https://cdn.utmify.com.br/scripts/pixel/pixel.js');
+        document.head.appendChild(pixelScript);
+
+        // 4. Carregar o script de UTMs
+        var utmScript = document.createElement('script');
+        utmScript.setAttribute('src', 'https://cdn.utmify.com.br/scripts/utms/latest.js');
+        utmScript.setAttribute('async', '');
+        utmScript.setAttribute('defer', '');
+        utmScript.setAttribute('data-utmify-prevent-xcod-sck', '');
+        utmScript.setAttribute('data-utmify-prevent-subids', '');
+        document.head.appendChild(utmScript);
+      }
+    })();
+  </script>
 </head>
 
 <body>
