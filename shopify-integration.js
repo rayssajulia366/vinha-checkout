@@ -1,119 +1,62 @@
 /**
- * ============================================================
  * SHOPIFY INTEGRATION SCRIPT
- * ============================================================
- * INSTRUÇÕES:
- * 1. Aceda ao painel da Shopify
- * 2. Vá a Online Store → Themes → Edit code
- * 3. Abra o ficheiro theme.liquid (ou layout/theme.liquid)
- * 4. Cole este script ANTES de </body>
- *
- * ALTERNATIVA (recomendada):
- * Vá a Settings → Checkout → Additional scripts
- * e cole este script lá.
- *
- * IMPORTANTE: Substitua CHECKOUT_URL pelo URL onde o seu
- * checkout está hospedado (ex: https://seudominio.com/checkout)
- * ============================================================
+ * Adicione este script ao seu ficheiro theme.liquid ou num bloco de script personalizado.
  */
+(function() {
+    // ---- CONFIGURAÇÃO ----
+    const CHECKOUT_URL = 'https://o-seu-site-na-vercel.app'; // <--- MUDE PARA O SEU LINK DA VERCEL
+    // ----------------------
 
-(function () {
-  'use strict';
+    function handleCheckoutRedirect(e) {
+        e.preventDefault();
+        e.stopPropagation();
 
-  // ============================================================
-  // CONFIGURAÇÃO — ALTERE AQUI
-  // ============================================================
-  var CHECKOUT_URL = 'https://seudominio.com/checkout/index.html';
-  // Exemplo: 'https://checkout.vinhashop.pt/index.html'
-  // ============================================================
+        console.log('Redirecionando para checkout personalizado...');
 
-  /**
-   * Intercepta o clique no botão "Finalizar Compra" da Shopify
-   * e redireciona para o nosso checkout personalizado
-   */
-  function interceptCheckoutButton() {
-    // Seletores comuns do botão de checkout na Shopify
-    var selectors = [
-      '[name="checkout"]',
-      '.cart__checkout',
-      '#checkout',
-      '.btn--checkout',
-      '[data-checkout-btn]',
-      'button[type="submit"][name="checkout"]',
-      '.cart-checkout-button',
-      '#CartDrawer-Checkout',
-      '#cart-checkout-button',
-    ];
+        // 1. Procurar os dados do carrinho no Shopify (via AJAX API)
+        fetch('/cart.js')
+            .then(res => res.json())
+            .then(cart => {
+                if (!cart.items || cart.items.length === 0) {
+                    alert('O seu carrinho está vazio.');
+                    return;
+                }
 
-    selectors.forEach(function (sel) {
-      var btns = document.querySelectorAll(sel);
-      btns.forEach(function (btn) {
-        btn.addEventListener('click', function (e) {
-          e.preventDefault();
-          e.stopPropagation();
-          redirectToCheckout();
-        });
-      });
-    });
+                // 2. Mapear os produtos para o formato do nosso checkout
+                const items = cart.items.map(item => ({
+                    id: item.id,
+                    name: item.product_title,
+                    variant: item.variant_title !== 'Default Title' ? item.variant_title : '',
+                    vendor: item.vendor,
+                    price: item.price / 100, // Shopify envia em cêntimos
+                    qty: item.quantity,
+                    img: item.image
+                }));
 
-    // Observer para elementos dinâmicos (cart drawer, etc.)
-    var observer = new MutationObserver(function () {
-      selectors.forEach(function (sel) {
-        var btns = document.querySelectorAll(sel);
-        btns.forEach(function (btn) {
-          if (!btn._customCheckoutBound) {
-            btn._customCheckoutBound = true;
-            btn.addEventListener('click', function (e) {
-              e.preventDefault();
-              e.stopPropagation();
-              redirectToCheckout();
+                // 3. Gerar a URL final com os parâmetros
+                const jsonItems = encodeURIComponent(JSON.stringify(items));
+                window.location.href = `${CHECKOUT_URL}?items=${jsonItems}`;
+            })
+            .catch(err => {
+                console.error('Erro ao processar checkout:', err);
+                window.location.href = '/checkout'; // Fallback para o checkout do Shopify se falhar
             });
-          }
-        });
-      });
-    });
+    }
 
+    // Tentar encontrar os botões de checkout (padrões do Shopify)
+    function attachEvents() {
+        const checkoutButtons = document.querySelectorAll('form[action="/cart"] [name="checkout"], .checkout-button, [href="/checkout"]');
+        
+        checkoutButtons.forEach(btn => {
+            if (btn.dataset.integrated !== 'true') {
+                btn.addEventListener('click', handleCheckoutRedirect);
+                btn.dataset.integrated = 'true';
+            }
+        });
+    }
+
+    // Rodar ao carregar e monitorizar mudanças no DOM (para carrinhos laterais/ajax)
+    attachEvents();
+    const observer = new MutationObserver(attachEvents);
     observer.observe(document.body, { childList: true, subtree: true });
-  }
-
-  /**
-   * Busca o carrinho atual via Shopify AJAX API e redireciona
-   */
-  function redirectToCheckout() {
-    fetch('/cart.js')
-      .then(function (r) { return r.json(); })
-      .then(function (cart) {
-        var items = (cart.items || []).map(function (item) {
-          return {
-            id: String(item.variant_id || item.id),
-            name: item.product_title || item.title,
-            category: item.vendor || '',
-            meta: item.variant_title !== 'Default Title' ? (item.variant_title || '') : '',
-            image: item.featured_image && item.featured_image.url
-              ? item.featured_image.url
-              : (item.image || ''),
-            price: (item.price / 100).toFixed(2),  // Shopify devolve centavos
-            qty: item.quantity,
-          };
-        });
-
-        var qs = encodeURIComponent(JSON.stringify(items));
-        window.location.href = CHECKOUT_URL + '?items=' + qs;
-      })
-      .catch(function (err) {
-        console.error('Erro ao carregar carrinho:', err);
-        // Fallback: redirecionar sem itens
-        window.location.href = CHECKOUT_URL;
-      });
-  }
-
-  // ============================================================
-  // INICIALIZAR QUANDO O DOM ESTIVER PRONTO
-  // ============================================================
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', interceptCheckoutButton);
-  } else {
-    interceptCheckoutButton();
-  }
-
 })();

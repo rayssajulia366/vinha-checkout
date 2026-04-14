@@ -302,6 +302,8 @@ function applyMasks() {
 // ============================================================
 function loadCartFromURL() {
   const params = new URLSearchParams(window.location.search);
+  
+  // Opção 1: Itens via JSON (múltiplos produtos)
   const itemsRaw = params.get('items');
   if (itemsRaw) {
     try {
@@ -316,8 +318,26 @@ function loadCartFromURL() {
         quantity: parseInt(item.qty || item.quantity || 1, 10),
       }));
     } catch (e) {
-      console.error('Erro ao carregar carrinho:', e);
+      console.error('Erro ao carregar carrinho via JSON:', e);
     }
+  } 
+  // Opção 2: Parâmetros simples (um único produto)
+  else if (params.get('name')) {
+    state.items = [{
+      id: params.get('id') || '1',
+      name: params.get('name') || 'Produto',
+      category: params.get('category') || '',
+      meta: params.get('meta') || '',
+      image: params.get('img') || params.get('image') || '',
+      price: parsePrice(params.get('price')),
+      quantity: parseInt(params.get('qty') || 1, 10),
+    }];
+  }
+
+  // Se carregamos itens, renderizamos logo
+  if (state.items.length > 0) {
+    renderCart();
+    updateTotals();
   }
 
   window.addEventListener('message', (event) => {
@@ -952,7 +972,7 @@ function setupMobileAccordion() {
 // ============================================================
 function init() {
   loadCartFromURL();
-  loadDemoItems();
+  // loadDemoItems(); // Removido para não mostrar produtos de teste
   renderCart();
   updateTotals();
   applyMasks();
