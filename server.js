@@ -4,7 +4,7 @@ const path = require('path');
 const handler = require('./api/create-payment');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 5000;
 
 // Middleware para entender JSON no corpo das requisições
 app.use(express.json());
