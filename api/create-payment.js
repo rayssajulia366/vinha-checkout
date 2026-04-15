@@ -52,16 +52,16 @@ module.exports = async function handler(req, res) {
 
   // Montar o corpo da requisição para a WayMB
   const waymb_payload = {
-    client_id:     process.env.WAYMB_CLIENT_ID,
+    client_id: process.env.WAYMB_CLIENT_ID,
     client_secret: process.env.WAYMB_CLIENT_SECRET,
     account_email: process.env.WAYMB_ACCOUNT_EMAIL,
-    amount:        parseFloat(amount),
-    method:        method,
-    currency:      'EUR',
+    amount: parseFloat(amount),
+    method: method,
+    currency: 'EUR',
     payer: {
-      name:     payerName,
-      email:    payerEmail,
-      phone:    payerPhone,
+      name: payerName,
+      email: payerEmail,
+      phone: payerPhone,
       document: payerDocument || '999999999', // NIF, fallback genérico
     },
     callbackUrl: callbackUrl,
@@ -69,9 +69,9 @@ module.exports = async function handler(req, res) {
 
   try {
     const response = await fetch(WAYMB_API_URL, {
-      method:  'POST',
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify(waymb_payload),
+      body: JSON.stringify(waymb_payload),
     });
 
     const data = await response.json();
@@ -79,18 +79,18 @@ module.exports = async function handler(req, res) {
     if (!response.ok) {
       console.error('[WayMB Error]', data);
       return res.status(response.status).json({
-        error:   'Erro ao criar transação na WayMB.',
+        error: 'Erro ao criar transação na WayMB.',
         details: data,
       });
     }
 
     // Retornar os dados necessários para o frontend
     return res.status(200).json({
-      transactionID:  data.transactionID || data.id,
-      method:         data.method,
-      amount:         data.amount,
+      transactionID: data.transactionID || data.id,
+      method: data.method,
+      amount: data.amount,
       generatedMBWay: data.generatedMBWay || false,
-      referenceData:  data.referenceData || null, // Entidade e Referência Multibanco
+      referenceData: data.referenceData || null, // Entidade e Referência Multibanco
     });
 
   } catch (err) {

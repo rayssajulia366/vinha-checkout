@@ -20,13 +20,13 @@ app.post('/api/create-payment', (req, res) => {
 // Rota de Webhook — Chamado pela WayMB quando o status do pagamento muda
 app.post('/api/payment-webhook', async (req, res) => {
   console.log('[Webhook] Notificação recebida:', req.body);
-  
+
   const { status, id, amount, payer } = req.body;
   const utmDetails = req.query.utm_details; // Detalhes do rastreio passados no callbackUrl
 
   if (status === 'COMPLETED') {
     console.log(`[Webhook] Venda confirmada! ID: ${id}, Valor: ${amount}`);
-    
+
     // Disparar para a UTMfy via API Server-to-Server
     const utmfyToken = process.env.UTMFY_TOKEN;
     if (utmfyToken) {
@@ -48,13 +48,13 @@ app.post('/api/payment-webhook', async (req, res) => {
 
         const utmfyResponse = await fetch('https://api.utmify.com.br/v1/events', {
           method: 'POST',
-          headers: { 
+          headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${utmfyToken}`
           },
           body: JSON.stringify(utmfyPayload)
         });
-        
+
         console.log('[UTMfy] Evento de Purchase enviado. Status:', utmfyResponse.status);
       } catch (err) {
         console.error('[UTMfy] Erro ao disparar evento:', err.message);
