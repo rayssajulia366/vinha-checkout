@@ -68,7 +68,7 @@ app.post('/api/payment-webhook', async (req, res) => {
   res.status(200).json({ received: true });
 });
 
-app.listen(PORT, () => {
-  console.log(`\n🚀 Servidor de teste a correr em: http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`\n🚀 Servidor a correr em http://0.0.0.0:${PORT}`);
   console.log(`Aperte CTRL+C para parar o servidor.\n`);
 });
