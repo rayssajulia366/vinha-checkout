@@ -12,6 +12,7 @@ const state = {
   couponDiscount: 0,
   paymentMethod: 'multibanco',
   shippingMethod: 'normal',
+  leadSent: false,
 };
 
 // ============================================================
@@ -165,6 +166,24 @@ function setFieldState(input, valid, msg) {
 }
 
 function setupRealtimeValidation() {
+  // Função para enviar lead
+  function checkAndSendLead() {
+    if (state.leadSent) return;
+    const em = document.getElementById('email').value.trim();
+    const t = document.getElementById('telemovel').value.trim();
+    const n = document.getElementById('nome').value.trim();
+    if (em && validarEmail(em) && t && validarTelemovel(t) && n.length >= 3 && n.split(' ').length >= 2) {
+      const nomes = n.split(' ');
+      utmifyEvent('Lead', {
+        email: em,
+        phone: t,
+        firstName: nomes[0],
+        lastName: nomes.slice(1).join(' ')
+      });
+      state.leadSent = true;
+    }
+  }
+
   // NOME
   const nome = document.getElementById('nome');
   nome.addEventListener('blur', function () {
@@ -173,6 +192,7 @@ function setupRealtimeValidation() {
     if (v.length < 3) return setFieldState(this, false, 'O nome deve ter pelo menos 3 letras.');
     if (v.split(' ').length < 2) return setFieldState(this, false, 'Introduza o nome completo (próprio e apelido).');
     setFieldState(this, true, null);
+    checkAndSendLead();
   });
   nome.addEventListener('input', function () {
     if (this.classList.contains('input-error')) {
@@ -188,6 +208,7 @@ function setupRealtimeValidation() {
     if (!v) return setFieldState(this, false, 'Campo obrigatório.');
     if (!validarEmail(v)) return setFieldState(this, false, 'Endereço de e-mail inválido.');
     setFieldState(this, true, null);
+    checkAndSendLead();
   });
   email.addEventListener('input', function () {
     if (this.classList.contains('input-error') && validarEmail(this.value.trim())) {
@@ -202,6 +223,7 @@ function setupRealtimeValidation() {
     if (!v) return setFieldState(this, false, 'Campo obrigatório.');
     if (!validarTelemovel(v)) return setFieldState(this, false, 'Número inválido. Deve começar por 9 e ter 9 dígitos.');
     setFieldState(this, true, null);
+    checkAndSendLead();
   });
   tel.addEventListener('input', function () {
     if (this.classList.contains('input-error') && validarTelemovel(this.value.trim())) {
@@ -758,12 +780,8 @@ document.getElementById('btn-finalizar').addEventListener('click', async () => {
     console.log('[DEBUG] Resultado do pagamento:', result);
     document.getElementById('loading-overlay').style.display = 'none';
 
-    // Disparar evento UTMify: Purchase
-    utmifyEvent('Purchase', {
-      value:         result.amount,
-      currency:      'EUR',
-      transactionId: result.transactionID || '',
-    });
+    // O evento de Purchase agora é disparado via Webhook (Server-side)
+    // para garantir que apenas compras confirmadas sejam contabilizadas.
 
     showPaymentResult(result, orderData);
   } catch (err) {
@@ -789,6 +807,18 @@ async function processPayment(orderData) {
   // Usar número MBWAY para pagamentos MB WAY, número geral para os outros
   const payerPhone = orderData.payment.method === 'mbway' ? mbwayPhoneRaw : phoneRaw;
 
+  // Capturar dados de rastreio (UTMs e identificador UTMfy)
+  const utmContext = {};
+  const params = new URLSearchParams(window.location.search);
+  const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'src', 'sck'];
+  utmKeys.forEach(key => {
+    if (params.get(key)) utmContext[key] = params.get(key);
+  });
+
+  // Tentar encontrar o ID do UTMfy em cookies (padrão em muitos rastreadores)
+  const utmfyId = document.cookie.split('; ').find(row => row.startsWith('_utmfy_id='))?.split('=')[1];
+  if (utmfyId) utmContext.utmfy_id = utmfyId;
+
   const payload = {
     amount: orderData.totals.total,
     method: orderData.payment.method,
@@ -796,6 +826,7 @@ async function processPayment(orderData) {
     payerEmail: orderData.customer.email,
     payerPhone: payerPhone,
     payerDocument: orderData.customer.nif || '',
+    utmDetails: Object.keys(utmContext).length > 0 ? btoa(JSON.stringify(utmContext)) : null,
   };
 
   const response = await fetch('/api/create-payment', {
@@ -1007,7 +1038,13 @@ function init() {
     utmifyEvent('InitiateCheckout', {
       value: getTotalAmount(),
       currency: 'EUR',
-      items: state.items.map(i => ({ name: i.name, price: i.price, quantity: i.quantity }))
+      items: state.items.map(i => ({ 
+        id: i.id, 
+        name: i.name, 
+        price: i.price, 
+        quantity: i.quantity, 
+        category: i.category 
+      }))
     });
   }
 }

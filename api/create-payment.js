@@ -37,12 +37,18 @@ module.exports = async function handler(req, res) {
     payerEmail,
     payerPhone,
     payerDocument,
+    utmDetails,   // Dados de rastreio da UTMfy (Base64)
   } = req.body;
 
   // Validação básica
   if (!amount || !method || !payerName || !payerEmail || !payerPhone) {
     return res.status(400).json({ error: 'Dados incompletos.' });
   }
+
+  // URL do Webhook no Replit
+  const host = req.headers.host || 'vinha-checkout.replit.app';
+  const protocol = req.headers['x-forwarded-proto'] || 'https';
+  const callbackUrl = `${protocol}://${host}/api/payment-webhook${utmDetails ? '?utm_details=' + utmDetails : ''}`;
 
   // Montar o corpo da requisição para a WayMB
   const waymb_payload = {
@@ -58,7 +64,7 @@ module.exports = async function handler(req, res) {
       phone:    payerPhone,
       document: payerDocument || '999999999', // NIF, fallback genérico
     },
-    // Sem callbackUrl por enquanto — será adicionado futuramente
+    callbackUrl: callbackUrl,
   };
 
   try {
